@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_highlight"
+        android:icon="@drawable/ic_action_web_site"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_highlight"/>
+    <item
+        android:id="@+id/action_subject"
+        android:icon="@drawable/ic_action_video"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_subject"/>
+    <item
+        android:id="@+id/action_sdcard"
+        android:icon="@drawable/ic_action_save"
+        android:title="@string/action_sdcard"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_bookmark"
+        android:icon="@drawable/ic_action_video"
+        android:title="@string/action_bookmark"
+        android:showAsAction="ifRoom"/>
+
+</menu>

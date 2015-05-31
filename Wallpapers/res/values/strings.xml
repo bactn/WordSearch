@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ActionBar</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_record">Record Video</string>
+    <string name="action_save">Save</string>
+    <string name="action_highlight">HighLight</string>
+    <string name="action_subject">Subject</string>
+    <string name="action_sdcard">sdcard</string>
+    <string name="action_bookmark">bookemark</string>
+    <string name="action_play">Play Video</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_book_mark_fragment">BookMarkFragment</string>
+	<string name="menu_item_clear_memory_cache">Clear memory cache</string>
+	<string name="menu_item_clear_disc_cache">Clear disc cache</string>
+	<string name="menu_item_pause_on_scroll">Pause on scroll</string>
+	<string name="menu_item_pause_on_fling">Pause on fling</string>
+</resources>
