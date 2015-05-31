@@ -1,5 +1,6 @@
 package com.example.wallpapers;
 
+import android.R.xml;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.Fragment;
@@ -22,22 +23,24 @@ import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-
 public class MainActivity extends Activity {
 	GridView gridView;
+	BaseAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		adapter = new ImageAdapter(getBaseContext());
 		// Set up an array of the Thumbnail Image ID column we want
 		// Create the cursor pointing to the SDCard
 		gridView = (GridView) findViewById(R.id.grid);
-		gridView.setAdapter(new ImageAdapter(getBaseContext()));
+		gridView.setAdapter(adapter);
 
 	}
 
@@ -55,32 +58,32 @@ public class MainActivity extends Activity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-//		FrameLayout frame = new FrameLayout(this);
+		FrameLayout frame = new FrameLayout(this);
 		// frame.setId(CONTENT_VIEW_ID);
-//		setContentView(frame, new LayoutParams(LayoutParams.MATCH_PARENT,
-//				LayoutParams.MATCH_PARENT));
+		setContentView(frame, new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT));
 
-//		int id = item.getItemId();
-//		switch (id) {
-//		case R.id.action_highlight:
-//			setContentView(R.layout.activity_main);
-//			Toast.makeText(this, "highLight", Toast.LENGTH_LONG).show();
-//			gridView = (GridView) findViewById(R.id.grid);
-//			// gridView.setAdapter(adapter);
-//			break;
-//		case R.id.action_subject:
-//			Fragment newFragment = new CatogoriesFragment();
-//			FragmentTransaction ft = getFragmentManager().beginTransaction();
-//			// ft.add(CONTENT_VIEW_ID, newFragment).commit();
-//			break;
-//		case R.id.action_bookmark:
-//			Fragment bookmaFragment = new BookMarkFragment();
-//			FragmentTransaction bmTransation = getFragmentManager()
-//					.beginTransaction();
-//			// bmTransation.add(CONTENT_VIEW_ID, bookmaFragment).commit();
-//		default:
-//			break;
-//		}
+		int id = item.getItemId();
+		switch (id) {
+		case R.id.action_highlight:
+			setContentView(R.layout.activity_main);
+			Toast.makeText(this, "highLight", Toast.LENGTH_LONG).show();
+			gridView = (GridView) findViewById(R.id.grid);
+			gridView.setAdapter(adapter);
+			break;
+		case R.id.action_subject:
+			Fragment newFragment = new CatogoriesFragment();
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			// ft.add(CONTENT_VIEW_ID, newFragment).commit();
+			break;
+		case R.id.action_bookmark:
+			Fragment bookmaFragment = new BookMarkFragment();
+			FragmentTransaction bmTransation = getFragmentManager()
+					.beginTransaction();
+			// bmTransation.add(CONTENT_VIEW_ID, bookmaFragment).commit();
+		default:
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -91,6 +94,8 @@ public class MainActivity extends Activity {
 
 		public ImageAdapter(Context context) {
 			// TODO Auto-generated constructor stub
+			ImageLoader.getInstance().init(
+					ImageLoaderConfiguration.createDefault(context));
 			inflater = LayoutInflater.from(context);
 
 			options = new DisplayImageOptions.Builder()
@@ -164,7 +169,8 @@ public class MainActivity extends Activity {
 						public void onProgressUpdate(String arg0, View arg1,
 								int current, int total) {
 							// TODO Auto-generated method stub
-							holder.progressBar.setProgress(Math.round(100.0f*current/total));
+							holder.progressBar.setProgress(Math.round(100.0f
+									* current / total));
 						}
 					});
 			return view;
