@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.example.wallpapers;
+package vn.star.wallpapers;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
+import vn.star.wallpapers.R;
 
 import android.app.Fragment;
 import android.content.Intent;

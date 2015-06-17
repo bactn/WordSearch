@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wallpapers"
+    package="vn.star.wallpapers"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.Light" >
         <activity
-            android:name=".MainActivity"
+            android:name="vn.star.activity.MainActivity"
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
@@ -31,17 +32,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CatogoriesFragment"
-            android:label="@string/app_name"
-            android:uiOptions="splitActionBarWhenNarrow" >
-            <meta-data
-                android:name="android.support.UI_OPTIONS"
-                android:value="splitActionBarWhenNarrow" />
+            android:name="vn.star.activity.SettingActivity"
+            android:label="@string/title_activity_setting" >
         </activity>
-        <activity
-            android:name=".BookMarkFragment"
-            android:label="@string/title_activity_book_mark_fragment" >
-        </activity>
+
+        <meta-data
+            android:name="vn.amobi.util.ads.widget_id"
+            android:value="f9b90ef3d5bce14165f01c98f94147ad" >
+        </meta-data>
     </application>
 
 </manifest>

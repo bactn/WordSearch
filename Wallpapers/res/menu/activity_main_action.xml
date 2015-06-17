@@ -3,7 +3,7 @@
     <item
         android:id="@+id/action_highlight"
         android:icon="@drawable/ic_action_web_site"
-        android:showAsAction="ifRoom"
+        android:showAsAction="ifRoom|withText"
         android:title="@string/action_highlight"/>
     <item
         android:id="@+id/action_subject"
@@ -13,12 +13,17 @@
     <item
         android:id="@+id/action_sdcard"
         android:icon="@drawable/ic_action_save"
-        android:title="@string/action_sdcard"
-        android:showAsAction="ifRoom"/>
+        android:showAsAction="always|withText"
+        android:title="@string/action_sdcard"/>
     <item
         android:id="@+id/action_bookmark"
         android:icon="@drawable/ic_action_video"
-        android:title="@string/action_bookmark"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_bookmark"/>
+    <item
+        android:id="@+id/action_select"
+        android:title="@string/action_play"
+        android:icon="@drawable/ic_action_play"
         android:showAsAction="ifRoom"/>
 
 </menu>

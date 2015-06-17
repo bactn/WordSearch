@@ -1,4 +1,7 @@
-package com.example.wallpapers;
+package vn.star.utils;
+
+import vn.star.wallpapers.R;
+import vn.star.wallpapers.R.drawable;
 
 public class Constants {
 	public static final String[] IMAGES = new String[] {
@@ -146,7 +149,7 @@ public class Constants {
 																			// symbols
 			"assets://Living Things @#&=+-_.,!()~'%20.jpg", // Image from assets
 			"drawable://" + R.drawable.ic_launcher, // Image from drawables
-			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png", // Link
+			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_�?_мышами_воевал.png", // Link
 																							// with
 																							// UTF-8
 			"https://www.eff.org/sites/default/files/chrome150_0.jpg", // Image
