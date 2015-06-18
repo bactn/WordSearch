@@ -1,0 +1,58 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/listView_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/setting_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@color/background_floating_material_light"
+        android:orientation="horizontal" >
+	
+        <vn.amobi.util.ads.AmobiAdView
+            android:id="@+id/setting_menu_adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <LinearLayout
+         
+            android:id="@+id/setting_item_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="horizontal" 
+            android:weightSum="4">
+
+            <Button
+                android:id="@+id/btn_set_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/set_time" 
+                android:layout_weight="2"/>
+
+            <Button
+                android:id="@+id/btn_set_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_action_download_light" 
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btn_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_favorite_light" />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

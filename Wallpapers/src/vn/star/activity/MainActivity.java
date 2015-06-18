@@ -26,11 +26,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -43,18 +44,21 @@ public class MainActivity extends Activity implements CursorInterface {
 	BaseAdapter adapter;
 	static int numberOfColumns;
 	static int heightOfGrid;
+	private boolean thumbnailSelection[];
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setGridView();
+
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		setGridView();
+
 		super.onResume();
 	}
 
@@ -91,7 +95,6 @@ public class MainActivity extends Activity implements CursorInterface {
 			ft.add(CONTENT_VIEW_ID, newFragment).commit();
 			return true;
 		case R.id.action_sdcard:
-
 			Fragment sdCardFragment = new SdCardFragment();
 			FragmentTransaction sdcardTrans = getFragmentManager()
 					.beginTransaction();
@@ -103,9 +106,9 @@ public class MainActivity extends Activity implements CursorInterface {
 					.beginTransaction();
 			bmTransation.add(4, bookmaFragment);
 			return true;
-		case R.id.action_settings:
+		case R.id.action_select:
 			startSettings();
-			return true;
+			break;
 		default:
 			break;
 		}
@@ -119,6 +122,8 @@ public class MainActivity extends Activity implements CursorInterface {
 		WindowManager wm = (WindowManager) this
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
+
+		Button btn = (Button) findViewById(R.id.btnchose);
 
 		int gridViewWidth = getResources().getDimensionPixelSize(
 				R.dimen.grip_view_width_size);
@@ -136,6 +141,26 @@ public class MainActivity extends Activity implements CursorInterface {
 		gridView = (GridView) findViewById(R.id.grid_main);
 		gridView.setNumColumns(numberOfColumns + 1);
 		gridView.setAdapter(adapter);
+		thumbnailSelection = new boolean[gridView.getCount()];
+		btn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				int len = thumbnailSelection.length;
+				int cnt = 0;
+				Log.e("count", "count" + len);
+				for (int i = 0; i < len; i++) {
+					if (thumbnailSelection[i]) {
+						Log.i("url", "" + Constants.IMAGES[i]);
+						Toast.makeText(getApplicationContext(),
+								"Item Clicked: " + i, Toast.LENGTH_SHORT)
+								.show();
+					}
+				}
+
+			}
+		});
 		// gridView.setOnItemClickListener(new OnItemClickListener() {
 		//
 		// @Override
@@ -151,20 +176,15 @@ public class MainActivity extends Activity implements CursorInterface {
 	}
 
 	public void startSettings() { // setting Wallpaper
-		int count = gridView.getAdapter().getCount();
-		for (int i = 0; i < count; i++) {
-
-			LinearLayout linear = (LinearLayout) gridView.getChildAt(i);
-			CheckBox checkBox = (CheckBox) linear
-					.findViewById(R.id.main_item_checkBox);
-			if (checkBox.isSelected()) {
-				Log.d("Item " + String.valueOf(i), checkBox.getTag().toString());
-				Toast.makeText(MainActivity.this,
-						"item: " + checkBox.getTag(i).toString(),
+		int len = thumbnailSelection.length;
+		int cnt = 0;
+		Log.e("count", "count" + len);
+		for (int i = 0; i < len; i++) {
+			if (thumbnailSelection[i]) {
+				Log.i("url", "" + Constants.IMAGES[i]);
+				Toast.makeText(getApplicationContext(), "Item Clicked: " + i,
 						Toast.LENGTH_SHORT).show();
-
 			}
-
 		}
 
 		// Intent intent = new Intent(this, SettingActivity.class);
@@ -173,7 +193,7 @@ public class MainActivity extends Activity implements CursorInterface {
 		// startActivity(intent);
 	}
 
-	private static class ImageAdapter extends BaseAdapter {
+	private class ImageAdapter extends BaseAdapter {
 
 		public final String[] IMAGES = Constants.IMAGES;
 		private DisplayImageOptions options;
@@ -226,28 +246,41 @@ public class MainActivity extends Activity implements CursorInterface {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 
-			final ViewHolder holder;
-			View view = convertView;
-			if (view == null) {
-				view = inflater.inflate(R.layout.item_gird_main, parent, false);
-				holder = new ViewHolder();
-				assert view != null;
-				imageView = (ImageView) view
-						.findViewById(R.id.item_image_grid_main);
-				imageView.getLayoutParams().height = heightOfGrid;
-				CheckBox selectItem = (CheckBox) view
-						.findViewById(R.id.main_item_checkBox);
-				if (selectItem.isSelected()) {
-					Log.d("Item " + String.valueOf(position), selectItem
-							.getTag().toString());
+			ViewHolder holder;
+			// if (convertView == null) {
+			holder = new ViewHolder();
+			convertView = inflater.inflate(R.layout.item_gird_main, parent,
+					false);
+			imageView = (ImageView) convertView
+					.findViewById(R.id.item_image_grid_main);
+			imageView.getLayoutParams().height = heightOfGrid;
+			holder.selectItem = (CheckBox) convertView
+					.findViewById(R.id.main_item_checkBox);
+			convertView.setTag(position);
 
+			// }
+			// else {
+			// holder = (ViewHolder) convertView.getTag();
+			// }
+			holder.selectItem.setId(position);
+			holder.selectItem.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					CheckBox cb = (CheckBox) v;
+					int id = cb.getId();
+					if (thumbnailSelection[id]) {
+						cb.setChecked(false);
+						thumbnailSelection[id] = false;
+					} else {
+						cb.setChecked(true);
+						thumbnailSelection[id] = true;
+					}
 				}
-				// holder.progressBar = (ProgressBar) view
-				// .findViewById(R.id.progress);
-				selectItem.setTag(position);
-			} else {
-				holder = (ViewHolder) view.getTag();
-			}
+			});
+
+			holder.selectItem.setTag(position);
 			ImageLoader.getInstance().displayImage(IMAGES[position], imageView,
 					options, new SimpleImageLoadingListener() {
 					});
@@ -259,14 +292,14 @@ public class MainActivity extends Activity implements CursorInterface {
 					Toast.makeText(mContext, "334", Toast.LENGTH_LONG).show();
 				}
 			});
-			return view;
+			return convertView;
 		}
-
 	}
 
-	static class ViewHolder {
+	class ViewHolder {
 		// imageView;
-		// selectItem;
+		CheckBox selectItem;
+		int id;
 	}
 
 	@Override
