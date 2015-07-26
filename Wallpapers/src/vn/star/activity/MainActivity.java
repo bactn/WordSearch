@@ -1,9 +1,13 @@
 package vn.star.activity;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import vn.star.utils.Constants;
+import vn.star.utils.Setting;
 import vn.star.wallpapers.BookMarkFragment;
 import vn.star.wallpapers.CatogoriesFragment;
-import vn.star.wallpapers.CursorInterface;
+import vn.star.wallpapers.Util;
 import vn.star.wallpapers.R;
 import vn.star.wallpapers.SdCardFragment;
 import android.app.ActionBar.LayoutParams;
@@ -11,6 +15,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -26,12 +31,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -39,35 +42,39 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class MainActivity extends Activity implements CursorInterface {
+public class MainActivity extends Activity implements Util, Setting {
 	GridView gridView;
 	BaseAdapter adapter;
 	static int numberOfColumns;
 	static int heightOfGrid;
 	private boolean thumbnailSelection[];
+	Menu menu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setGridView();
+		createGridView();
 
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		setGridView();
-
+		createGridView();
+		if (menu != null) {
+			menu.getItem(4).setEnabled(false);
+			menu.getItem(4).setIcon(R.drawable.ic_action_play_light);
+		}
 		super.onResume();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menus) {
+		this.menu = menus;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_main_action, menu);
-		menu.getItem(0).setIcon(R.drawable.ic_action_play);
+		menu.getItem(4).setEnabled(false);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -86,7 +93,7 @@ public class MainActivity extends Activity implements CursorInterface {
 		int id = item.getItemId();
 		switch (id) {
 		case R.id.action_highlight:
-			setGridView();
+			createGridView();
 			break;
 		case R.id.action_subject:
 			Toast.makeText(this, "action_subject", Toast.LENGTH_LONG).show();
@@ -115,7 +122,7 @@ public class MainActivity extends Activity implements CursorInterface {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void setGridView() { // set Adapter for GridView
+	public void createGridView() { // set Adapter for GridView
 		setContentView(R.layout.activity_main);
 		ImageLoader.getInstance().init(
 				ImageLoaderConfiguration.createDefault(this));
@@ -123,7 +130,7 @@ public class MainActivity extends Activity implements CursorInterface {
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 
-		Button btn = (Button) findViewById(R.id.btnchose);
+		// Button btn = (Button) findViewById(R.id.btnchose);
 
 		int gridViewWidth = getResources().getDimensionPixelSize(
 				R.dimen.grip_view_width_size);
@@ -142,55 +149,7 @@ public class MainActivity extends Activity implements CursorInterface {
 		gridView.setNumColumns(numberOfColumns + 1);
 		gridView.setAdapter(adapter);
 		thumbnailSelection = new boolean[gridView.getCount()];
-		btn.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				int len = thumbnailSelection.length;
-				int cnt = 0;
-				Log.e("count", "count" + len);
-				for (int i = 0; i < len; i++) {
-					if (thumbnailSelection[i]) {
-						Log.i("url", "" + Constants.IMAGES[i]);
-						Toast.makeText(getApplicationContext(),
-								"Item Clicked: " + i, Toast.LENGTH_SHORT)
-								.show();
-					}
-				}
-
-			}
-		});
-		// gridView.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> arg0, View arg1,
-		// int position, long arg3) {
-		// Toast.makeText(getApplicationContext(),
-		// "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
-		// // TODO Auto-generated method stub
-		//
-		// }
-		// });
-
-	}
-
-	public void startSettings() { // setting Wallpaper
-		int len = thumbnailSelection.length;
-		int cnt = 0;
-		Log.e("count", "count" + len);
-		for (int i = 0; i < len; i++) {
-			if (thumbnailSelection[i]) {
-				Log.i("url", "" + Constants.IMAGES[i]);
-				Toast.makeText(getApplicationContext(), "Item Clicked: " + i,
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		// Intent intent = new Intent(this, SettingActivity.class);
-		// intent.putExtra("POSITION", position);
-		// intent.putExtra("IMAGE_URL", Constants.IMAGES[position]);
-		// startActivity(intent);
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -245,8 +204,8 @@ public class MainActivity extends Activity implements CursorInterface {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
-
-			ViewHolder holder;
+			final int count_check_item = 0;
+			final ViewHolder holder;
 			// if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.item_gird_main, parent,
@@ -271,10 +230,24 @@ public class MainActivity extends Activity implements CursorInterface {
 					CheckBox cb = (CheckBox) v;
 					int id = cb.getId();
 					if (thumbnailSelection[id]) {
+						holder.numberItemChecked--;
+						holder.setCountChecked(holder.numberItemChecked);
+						Log.e("numberItemChecked",
+								"numberItemChecked" + holder.getCountChecked());
+
 						cb.setChecked(false);
 						thumbnailSelection[id] = false;
+						menu.getItem(4).setEnabled(false);
+						menu.getItem(4)
+								.setIcon(R.drawable.ic_action_play_light);
 					} else {
+						holder.numberItemChecked++;
+						holder.setCountChecked(holder.numberItemChecked);
+						Log.e("numberItemChecked",
+								"numberItemChecked" + holder.getCountChecked());
 						cb.setChecked(true);
+						menu.getItem(4).setEnabled(true);
+						menu.getItem(4).setIcon(R.drawable.ic_action_play);
 						thumbnailSelection[id] = true;
 					}
 				}
@@ -300,6 +273,15 @@ public class MainActivity extends Activity implements CursorInterface {
 		// imageView;
 		CheckBox selectItem;
 		int id;
+		int numberItemChecked;
+
+		int getCountChecked() {
+			return numberItemChecked;
+		}
+
+		void setCountChecked(int count) {
+			this.numberItemChecked = count;
+		}
 	}
 
 	@Override
@@ -321,8 +303,35 @@ public class MainActivity extends Activity implements CursorInterface {
 	}
 
 	@Override
-	public int getHeightOfGrid() {
+	public int getHeightOfGridItem() {
 		// TODO Auto-generated method stub
 		return heightOfGrid;
 	}
+
+	public Menu getMenu() {
+		return menu;
+	}
+
+	@Override
+	public void startSettings() {
+		ArrayList<String> image_url = new ArrayList<String>();
+		String url;
+		int len = thumbnailSelection.length;
+		Log.e("count", "count" + len);
+		for (int i = 0; i < len; i++) {
+			if (thumbnailSelection[i]) {
+				url = Constants.IMAGES[i];
+				Log.i("url", "" + url);
+				image_url.add(url);
+				Toast.makeText(getApplicationContext(), "Item Clicked: " + i,
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		Intent intent = new Intent(this, SettingActivity.class);
+		intent.putExtra("ARRAY_IMAGE_URL", image_url);
+		startActivity(intent);
+
+	}
+
 }

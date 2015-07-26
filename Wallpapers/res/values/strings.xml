@@ -11,7 +11,7 @@
     <string name="action_sdcard">sdcard</string>
     <string name="item_list_url_detail">Location: </string>
     <string name="action_play">Play Video</string>
-    <string name="action_bookmark">Play Video</string>
+    <string name="action_bookmark">Bookmark</string>
     <string name="action_select">Select</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_book_mark_fragment">BookMarkFragment</string>

@@ -16,7 +16,7 @@
         android:layout_gravity="bottom"
         android:background="@color/background_floating_material_light"
         android:orientation="horizontal" >
-	
+
         <vn.amobi.util.ads.AmobiAdView
             android:id="@+id/setting_menu_adView"
             android:layout_width="wrap_content"
@@ -24,34 +24,44 @@
             android:visibility="gone" />
 
         <LinearLayout
-         
             android:id="@+id/setting_item_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:orientation="horizontal" 
-            android:weightSum="4">
+            android:orientation="horizontal"
+            android:weightSum="4" >
 
             <Button
                 android:id="@+id/btn_set_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/set_time" 
-                android:layout_weight="2"/>
+                android:layout_weight="2"
+                android:text="@string/set_time" />
 
-            <Button
-                android:id="@+id/btn_set_bookmark"
+            <ToggleButton
+                android:id="@+id/btn_set_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_action_download_light" 
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:background="@drawable/favorite"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text=""
+                android:textOff=""
+                android:textOn=""
+                android:textSize="0dp" />
 
-            <Button
+            <ToggleButton
                 android:id="@+id/btn_download"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/ic_action_favorite_light" />
+                android:background="@drawable/download"
+                android:focusable="true"
+                android:text=""
+                android:textOff=""
+                android:textOn=""
+                android:textSize="0dp" />
         </LinearLayout>
     </LinearLayout>
 

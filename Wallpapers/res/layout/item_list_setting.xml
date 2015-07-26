@@ -1,13 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/item_list_image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher" />
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/item_list_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_launcher" />
+
+        <CheckBox
+            android:id="@+id/favorite"
+            android:layout_gravity="right|top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/selector" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

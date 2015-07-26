@@ -20,10 +20,10 @@
         android:icon="@drawable/ic_action_video"
         android:showAsAction="ifRoom|withText"
         android:title="@string/action_bookmark"/>
-    <item
+    <item 
         android:id="@+id/action_select"
         android:title="@string/action_play"
-        android:icon="@drawable/ic_action_play"
+        android:icon="@drawable/ic_action_play_light"
         android:showAsAction="ifRoom"/>
 
 </menu>

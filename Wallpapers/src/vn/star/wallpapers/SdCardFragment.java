@@ -3,7 +3,8 @@ package vn.star.wallpapers;
 import java.util.ArrayList;
 
 import vn.star.activity.SettingActivity;
-
+import vn.star.utils.Constants;
+import vn.star.utils.Setting;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -31,24 +33,26 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class SdCardFragment extends Fragment {
-	private CursorInterface cursorInterface;
+public class SdCardFragment extends Fragment implements Setting {
+	private Util utils;
 	private ArrayList<String> imageUrls;
 	private DisplayImageOptions options;
 	private ImageAdapter imageAdapter;
 	private BaseAdapter adapter;
 	GridView grid;
 	private Cursor cursor;
+	Menu menu;
+	private boolean thumbnailSelection[];
 
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		try {
-			cursorInterface = (CursorInterface) activity;
+			utils = (Util) activity;
 		} catch (Exception e) {
 			throw new RuntimeException(activity.getClass().getName()
-					+ " must implement " + CursorInterface.class.getName());
+					+ " must implement " + Util.class.getName());
 
 		}
 
@@ -64,7 +68,9 @@ public class SdCardFragment extends Fragment {
 		ImageLoader.getInstance().init(
 				ImageLoaderConfiguration.createDefault(getActivity()));
 		imageUrls = new ArrayList<String>();
-		cursor = cursorInterface.getCursor();
+		cursor = utils.getCursor();
+		menu = utils.getMenu();
+
 		for (int i = 0; i < cursor.getCount(); i++) {
 			cursor.moveToPosition(i);
 			int columIndex = cursor
@@ -83,6 +89,7 @@ public class SdCardFragment extends Fragment {
 		adapter = new ImageAdapter(getActivity().getBaseContext(), imageUrls);
 		grid = (GridView) view.findViewById(R.id.grid_sdcard);
 		grid.setAdapter(adapter);
+		this.thumbnailSelection = new boolean[grid.getCount()];
 
 		grid.setOnItemClickListener(new OnItemClickListener() {
 
@@ -94,7 +101,7 @@ public class SdCardFragment extends Fragment {
 			}
 		});
 
-		grid.setNumColumns(cursorInterface.getNumberOfColumns());
+		grid.setNumColumns(utils.getNumberOfColumns());
 		Toast.makeText(this.getActivity().getApplicationContext(),
 				"width: " + grid.getWidth() + "height: " + grid.getHeight(),
 				Toast.LENGTH_LONG).show();
@@ -166,30 +173,81 @@ public class SdCardFragment extends Fragment {
 				view = mInflater.inflate(R.layout.item_grid_sdcard, parent,
 						false);
 			}
-			CheckBox mCheckBox = (CheckBox) view
+			ViewHolder holder = new ViewHolder();
+			holder.mCheckBox = (CheckBox) view
 					.findViewById(R.id.select_item_sdcard);
 
 			final ImageView image = (ImageView) view
 					.findViewById(R.id.item_img_grid_sdcard);
-			image.getLayoutParams().height = cursorInterface.getHeightOfGrid();
+			image.getLayoutParams().height = utils.getHeightOfGridItem();
 			ImageLoader.getInstance().displayImage(
 					"file://" + imageUrls.get(position), image, options,
 					new SimpleImageLoadingListener() {
 					});
 			image.setOnClickListener(new OnClickListener() {
-
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					Intent intent = new Intent(getActivity()
 							.getApplicationContext(), SettingActivity.class);
 					intent.putExtra("POSITION", position);
-					intent.putExtra("IMAGE_URL", imageUrls.get(position));
+					intent.putExtra("ARRAY_IMAGE_URL", imageUrls.get(position));
 					startActivity(intent);
+				}
+			});
+			// holder.mCheckBox.setId(position);
+			holder.mCheckBox.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					// CheckBox cb = (CheckBox) v;
+					// int id = cb.getId();
+					// if (thumbnailSelection[id]) {
+					// cb.setChecked(false);
+					// thumbnailSelection[id] = false;
+					// menu.getItem(4).setEnabled(false);
+					// } else {
+					// cb.setChecked(true);
+					menu.getItem(4).setEnabled(true);
+					menu.getItem(4).setIcon(R.drawable.ic_action_play);
+					// thumbnailSelection[id] = true;
+					// }
 				}
 			});
 			return view;
 		}
 
 	}
+
+	class ViewHolder {
+		// imageView;
+		CheckBox mCheckBox;
+		int id;
+	}
+
+	@Override
+	public void startSettings() {
+		ArrayList<String> image_url = new ArrayList<String>();
+		String url;
+		int len = thumbnailSelection.length;
+		Log.e("count", "count" + len);
+		for (int i = 0; i < len; i++) {
+			if (thumbnailSelection[i]) {
+				url = "file://" + imageUrls.get(i);
+				Log.i("url", "" + url);
+				image_url.add(url);
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Item Clicked: " + i, Toast.LENGTH_SHORT).show();
+			}
+		}
+		Toast.makeText(getActivity().getApplicationContext(),
+				"Item Clicked: " + image_url.get(0), Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(getActivity().getApplicationContext(),
+				SettingActivity.class);
+		intent.putExtra("ARRAY_IMAGE_URL", image_url);
+		startActivity(intent);
+
+	}
+
 }

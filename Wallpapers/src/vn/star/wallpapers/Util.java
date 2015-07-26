@@ -1,9 +1,12 @@
 package vn.star.wallpapers;
 
 import android.database.Cursor;
+import android.view.Menu;
 
-public interface CursorInterface {
+public interface Util {
 	Cursor getCursor();
+	Menu getMenu();
 	int getNumberOfColumns();
-	int getHeightOfGrid();
+	int getHeightOfGridItem();
+	
 }
