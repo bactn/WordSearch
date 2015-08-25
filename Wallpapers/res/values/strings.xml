@@ -14,6 +14,15 @@
     <string name="action_bookmark">Bookmark</string>
     <string name="action_select">Select</string>
     <string name="hello_world">Hello world!</string>
+
+    <!-- timer picker -->
+    <string name="str_tp_day">Day</string>
+    <string name="str_tp_hour">Hour</string>
+    <string name="str_tp_minute">Minute</string>
+    <string name = "str_btn_cancel">Cancel</string>
+    <string name = "str_btn_ok">Ok</string>
+    <!--  -->
+    
     <string name="title_activity_book_mark_fragment">BookMarkFragment</string>
     <string name="menu_item_clear_memory_cache">Clear memory cache</string>
     <string name="menu_item_clear_disc_cache">Clear disc cache</string>
@@ -23,5 +32,8 @@
     <string name="set_time">Set Wallpaper time</string>
     <string name="add_bookmark">Add BookMark</string>
     <string name="item_download">Download</string>
+    <string name="title_activity_demo">DemoActivity</string>
+    <string name="title_activity_category_fragment">CategoryFragment</string>
+    <string name="title_activity_timer">TimerActivity</string>
 
 </resources>

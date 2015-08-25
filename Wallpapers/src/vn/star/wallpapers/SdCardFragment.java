@@ -3,7 +3,6 @@ package vn.star.wallpapers;
 import java.util.ArrayList;
 
 import vn.star.activity.SettingActivity;
-import vn.star.utils.Constants;
 import vn.star.utils.Setting;
 import android.app.Activity;
 import android.app.Fragment;
@@ -112,14 +111,6 @@ public class SdCardFragment extends Fragment implements Setting {
 
 		ArrayList<String> selectedItems = imageAdapter.getCheckedItems();
 	}
-
-	/*
-	 * private void startImageGalleryActivity(int position) { Intent intent =
-	 * new Intent(this, ImagePagerActivity.class); intent.putExtra(Extra.IMAGES,
-	 * imageUrls); intent.putExtra(Extra.IMAGE_POSITION, position);
-	 * startActivity(intent); }
-	 */
-
 	public class ImageAdapter extends BaseAdapter {
 
 		ArrayList<String> mList;

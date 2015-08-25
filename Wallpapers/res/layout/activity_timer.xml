@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    tools:context=".TimerActivity" >
+
+    <NumberPicker
+        android:id="@+id/np_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="96dp" />
+
+    <TextView
+        android:id="@+id/txt_minute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/np_minute"
+        android:layout_alignLeft="@+id/np_minute"
+        android:layout_alignRight="@+id/np_minute"
+        android:gravity="center"
+        android:text="@string/str_tp_minute" />
+
+    <NumberPicker
+        android:id="@+id/np_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/np_day"
+        android:layout_toRightOf="@+id/np_day" />
+
+    <NumberPicker
+        android:id="@+id/np_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/np_hour"
+        android:layout_toRightOf="@+id/np_hour" />
+
+    <TextView
+        android:id="@+id/txt_hour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txt_minute"
+        android:layout_alignBottom="@+id/txt_minute"
+        android:layout_alignRight="@+id/np_hour"
+        android:layout_toRightOf="@+id/np_day"
+        android:gravity="center"
+        android:text="@string/str_tp_hour" />
+
+    <TextView
+        android:id="@+id/txt_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txt_hour"
+        android:layout_toLeftOf="@+id/txt_hour"
+        android:gravity="center"
+        android:text="@string/str_tp_day" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/np_minute"
+        android:layout_below="@+id/np_day"
+        android:orientation="horizontal"
+        android:weightSum="2" >
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/str_btn_cancel" />
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/str_btn_ok" />
+    </LinearLayout>
+
+</RelativeLayout>

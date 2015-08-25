@@ -1,15 +1,15 @@
 package vn.star.activity;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import vn.star.activity.SettingActivity.setWallpaperTime;
 import vn.star.utils.Constants;
 import vn.star.utils.Setting;
 import vn.star.wallpapers.BookMarkFragment;
 import vn.star.wallpapers.CatogoriesFragment;
-import vn.star.wallpapers.Util;
 import vn.star.wallpapers.R;
 import vn.star.wallpapers.SdCardFragment;
+import vn.star.wallpapers.Util;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.Fragment;
@@ -42,8 +42,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+
 public class MainActivity extends Activity implements Util, Setting {
 	GridView gridView;
+	
 	BaseAdapter adapter;
 	static int numberOfColumns;
 	static int heightOfGrid;
@@ -262,7 +264,8 @@ public class MainActivity extends Activity implements Util, Setting {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					Toast.makeText(mContext, "334", Toast.LENGTH_LONG).show();
+//					startSettings();
+					Toast.makeText(mContext, "please check your image", Toast.LENGTH_LONG).show();
 				}
 			});
 			return convertView;
@@ -289,7 +292,7 @@ public class MainActivity extends Activity implements Util, Setting {
 
 		final String[] columns = { MediaStore.Images.Media.DATA,
 				MediaStore.Images.Media._ID };
-		final String orderBy = MediaStore.Images.Media.DATE_TAKEN;
+		final String orderBy = MediaStore.Images.Media.DATE_ADDED;
 		Cursor imagecursor = this.managedQuery(
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
 				null, orderBy + " DESC");
