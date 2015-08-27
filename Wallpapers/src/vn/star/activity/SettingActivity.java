@@ -36,6 +36,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -52,7 +53,6 @@ public class SettingActivity extends Activity implements OnClickListener {
 	private ArrayList<String> image_urls;
 	private DisplayImageOptions options;
 	TextView txt_image_url;
-	Button btn_favorite, btn_download;
 	Button btn_set_time;
 	// Dialog set time for Wallpaper
 	NumberPicker[] numberPicker;
@@ -83,9 +83,6 @@ public class SettingActivity extends Activity implements OnClickListener {
 		/* list of image which be selected */
 		ListView listView = (ListView) findViewById(R.id.listView_setting);
 		listView.setAdapter(new ImageAdapter(this.getApplicationContext()));
-		btn_favorite = (Button) findViewById(R.id.btn_set_favorite);
-		btn_favorite.setOnClickListener(this);
-		btn_download = (Button) findViewById(R.id.btn_download);
 		btn_set_time = (Button) findViewById(R.id.btn_set_time);
 
 		// initialize for setting schedule
@@ -94,57 +91,6 @@ public class SettingActivity extends Activity implements OnClickListener {
 		pendingIntent = PendingIntent.getBroadcast(this, 0, intent_schedule, 0);
 
 		// click to download img to sdcard
-		btn_download.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Thread thread = new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						String url_path = image_urls.get(0);
-						URL url = null;
-						try {
-							url = new URL(url_path);
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						String filePath = Environment
-								.getExternalStorageDirectory().toString();
-						new File(filePath + "/bbb/img").mkdirs();
-						File image_name = new File(filePath
-								+ "/bbb/img/bbbb.jpg");
-						try {
-
-							InputStream input = url.openStream();
-							Bitmap bmp = BitmapFactory.decodeStream(input);
-							OutputStream output = new FileOutputStream(
-									image_name);
-							bmp.compress(Bitmap.CompressFormat.JPEG, 100,
-									output);
-							Log.e("OutPut Stream", "" + output);
-							output.flush();
-							output.close();
-							MediaStore.Images.Media.insertImage(
-									getContentResolver(),
-									image_name.getAbsolutePath(),
-									image_name.getName(), image_name.getName());
-
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-				thread.start();
-			}
-		});
 
 		btn_set_time.setOnClickListener(new OnClickListener() {
 
@@ -157,6 +103,50 @@ public class SettingActivity extends Activity implements OnClickListener {
 			}
 		});
 
+	}
+
+	private void downloadImg(final int item) {
+
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				String url_path = image_urls.get(item);
+				URL url = null;
+				try {
+					url = new URL(url_path);
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String filePath = Environment.getExternalStorageDirectory()
+						.toString();
+				new File(filePath + "/bbb/img").mkdirs();
+				File image_name = new File(filePath + "/bbb/img/bbbb.jpg");
+				try {
+
+					InputStream input = url.openStream();
+					Bitmap bmp = BitmapFactory.decodeStream(input);
+					OutputStream output = new FileOutputStream(image_name);
+					bmp.compress(Bitmap.CompressFormat.JPEG, 100, output);
+					Log.e("OutPut Stream", "" + output);
+					output.flush();
+					output.close();
+					MediaStore.Images.Media.insertImage(getContentResolver(),
+							image_name.getAbsolutePath(), image_name.getName(),
+							image_name.getName());
+
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
 
 	private void showDialogSetTimer() { // show dialog set timer for wallpaper
@@ -193,17 +183,18 @@ public class SettingActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				AlarmManager alarmMng = (AlarmManager) getSystemService(Context.WALLPAPER_SERVICE);
-				alarmMng.setRepeating(AlarmManager.ELAPSED_REALTIME,
-						SystemClock.elapsedRealtime(),
-						getMinuteTotal() * 1000 * 60, pendingIntent);
+				// AlarmManager alarmMng = (AlarmManager)
+				// getSystemService(Context.WALLPAPER_SERVICE);
+				// alarmMng.setRepeating(AlarmManager.ELAPSED_REALTIME,
+				// SystemClock.elapsedRealtime(),
+				// getMinuteTotal() * 1000 * 60, pendingIntent);
 				dialog.cancel();
 				Toast.makeText(
 						getApplicationContext(),
 						"day: " + numberPicker[0].getValue() + "hour: "
 								+ numberPicker[1].getValue() + "minute: "
-								+ numberPicker[2].getValue(),
-						Toast.LENGTH_SHORT).show();
+								+ numberPicker[2].getValue() + "total minutes "
+								+ getMinuteTotal(), Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -289,8 +280,12 @@ public class SettingActivity extends Activity implements OnClickListener {
 		}
 
 		@Override
-		public View getView(int position, View converView, ViewGroup parent) {
+		public View getView(final int position, View converView,
+				ViewGroup parent) {
 			// TODO Auto-generated method stub
+			CheckBox cb_favorite;
+			CheckBox cb_download;
+
 			if (converView == null) {
 				converView = inflate.inflate(R.layout.item_list_setting,
 						parent, false);
@@ -299,10 +294,38 @@ public class SettingActivity extends Activity implements OnClickListener {
 					.findViewById(R.id.item_list_image);
 			txt_image_url = (TextView) converView
 					.findViewById(R.id.item_list_url_value);
+
+			/* initialize favorite Button */
+
+			cb_favorite = (CheckBox) converView.findViewById(R.id.btn_favorite);
+			cb_favorite.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					Toast.makeText(getApplicationContext(),
+							"click to button favorite", Toast.LENGTH_LONG)
+							.show();
+				}
+			});
+
+			/* initialize download button */
+
+			cb_download = (CheckBox) converView.findViewById(R.id.btn_download);
+			cb_download.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					downloadImg(position);
+					Toast.makeText(getApplicationContext(),
+							"you download successed", Toast.LENGTH_LONG).show();
+				}
+			});
+
 			if (image_urls != null) {
 				txt_image_url.setText(image_urls.get(position));
 			}
-
 			ImageLoader.getInstance().displayImage(image_urls.get(position),
 					image, options, new SimpleImageLoadingListener() {
 					});
