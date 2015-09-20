@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import vn.star.utils.Bookmark;
+import vn.star.utils.DatabaseHandler;
 import vn.star.wallpapers.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,8 +51,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class SettingActivity extends Activity implements OnClickListener {
-	private String imageUrls;
-	private ArrayList<String> image_urls;
+	public static ArrayList<String> image_urls;
 	private DisplayImageOptions options;
 	TextView txt_image_url;
 	Button btn_set_time;
@@ -60,8 +61,11 @@ public class SettingActivity extends Activity implements OnClickListener {
 	Button btn_dialog_cancel;
 
 	PendingIntent pendingIntent;
-	static int img_position = 0;
 
+	static ListView listView; //
+	static BaseAdapter adapter;
+
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,7 +73,9 @@ public class SettingActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_setting);
 		Intent intent = getIntent();
 		image_urls = intent.getStringArrayListExtra("ARRAY_IMAGE_URL");
-
+		if(image_urls.size() >0){
+			Log.i("imgURL setting", "imgURl"+image_urls.get(0));
+		}
 		/* config ImageLoader Library */
 		ImageLoader.getInstance().init(
 				ImageLoaderConfiguration.createDefault(this));
@@ -81,15 +87,17 @@ public class SettingActivity extends Activity implements OnClickListener {
 				.bitmapConfig(Bitmap.Config.RGB_565).build();
 
 		/* list of image which be selected */
-		ListView listView = (ListView) findViewById(R.id.listView_setting);
-		listView.setAdapter(new ImageAdapter(this.getApplicationContext()));
+		listView = (ListView) findViewById(R.id.listView_setting);
+		adapter = new ImageAdapter(this.getApplicationContext());
+
+		listView.setAdapter(adapter);
 		btn_set_time = (Button) findViewById(R.id.btn_set_time);
 
 		// initialize for setting schedule
 		Intent intent_schedule = new Intent(getBaseContext(),
 				ScheduleReciver.class);
 		pendingIntent = PendingIntent.getBroadcast(this, 0, intent_schedule, 0);
-
+	
 		// click to download img to sdcard
 
 		btn_set_time.setOnClickListener(new OnClickListener() {
@@ -98,6 +106,8 @@ public class SettingActivity extends Activity implements OnClickListener {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				// show timer dialog for time setting
+				// new setWallpaperTime().execute();
+				/* show dialog to set Schedule for Wallpaper */
 				showDialogSetTimer();
 
 			}
@@ -183,11 +193,10 @@ public class SettingActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				// AlarmManager alarmMng = (AlarmManager)
-				// getSystemService(Context.WALLPAPER_SERVICE);
-				// alarmMng.setRepeating(AlarmManager.ELAPSED_REALTIME,
-				// SystemClock.elapsedRealtime(),
-				// getMinuteTotal() * 1000 * 60, pendingIntent);
+				AlarmManager alarmMng = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+				alarmMng.setRepeating(AlarmManager.ELAPSED_REALTIME,
+						SystemClock.elapsedRealtime(),
+						getMinuteTotal() * 1000 * 60, pendingIntent);
 				dialog.cancel();
 				Toast.makeText(
 						getApplicationContext(),
@@ -195,6 +204,7 @@ public class SettingActivity extends Activity implements OnClickListener {
 								+ numberPicker[1].getValue() + "minute: "
 								+ numberPicker[2].getValue() + "total minutes "
 								+ getMinuteTotal(), Toast.LENGTH_SHORT).show();
+
 			}
 		});
 
@@ -256,6 +266,7 @@ public class SettingActivity extends Activity implements OnClickListener {
 
 	public class ImageAdapter extends BaseAdapter {
 		LayoutInflater inflate;
+		Boolean isFavorited = false;
 
 		public ImageAdapter(Context cxt) {
 			inflate = LayoutInflater.from(cxt);
@@ -285,7 +296,15 @@ public class SettingActivity extends Activity implements OnClickListener {
 			// TODO Auto-generated method stub
 			CheckBox cb_favorite;
 			CheckBox cb_download;
+			Button btn_delete;
 
+			// DatabaseHandler db = new
+			// DatabaseHandler(getApplicationContext());
+			// db.deleteAllBookmark(new Bookmark()); List<Bookmark> bookmarks =
+			// db.getAllBookmarks(); for (Bookmark bm : bookmarks) {
+			// String log = bm.getPhoneNumber() + bm.getName();
+			// Log.d("bookmark", "bookmark" + log); }
+			//
 			if (converView == null) {
 				converView = inflate.inflate(R.layout.item_list_setting,
 						parent, false);
@@ -296,7 +315,6 @@ public class SettingActivity extends Activity implements OnClickListener {
 					.findViewById(R.id.item_list_url_value);
 
 			/* initialize favorite Button */
-
 			cb_favorite = (CheckBox) converView.findViewById(R.id.btn_favorite);
 			cb_favorite.setOnClickListener(new OnClickListener() {
 
@@ -306,6 +324,27 @@ public class SettingActivity extends Activity implements OnClickListener {
 					Toast.makeText(getApplicationContext(),
 							"click to button favorite", Toast.LENGTH_LONG)
 							.show();
+					/* query bookmark to sqlite */
+					DatabaseHandler db = new DatabaseHandler(
+							getApplicationContext());
+					if (!isFavorited) {
+						db.addBookmark(new Bookmark(image_urls.get(position)));
+						isFavorited = true;
+					} else {
+						db.deleteBookmark(new Bookmark((db.getBookmarksCount())));
+						isFavorited = false;
+					}
+				}
+			});
+			/* initialize delete button */
+			btn_delete = (Button) converView.findViewById(R.id.btn_delete);
+			btn_delete.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					image_urls.remove(position);
+					SettingActivity.adapter.notifyDataSetChanged();
 				}
 			});
 
@@ -338,45 +377,20 @@ public class SettingActivity extends Activity implements OnClickListener {
 
 	}
 
-	class setWallpaperTime extends AsyncTask<String, Void, String> {
-
-		protected String doInBackground(String... urls) {
-			// try {
-
-			String url_path = image_urls.get(img_position);
-			img_position++;
-			if (img_position == image_urls.size()) {
-				img_position = 0;
-			}
-			WallpaperManager wpm = WallpaperManager
-					.getInstance(getBaseContext());
-			InputStream ips;
-			Toast.makeText(getApplicationContext(), "set wallpaper successed",
-					Toast.LENGTH_SHORT).show();
-			try {
-				ips = new URL(url_path).openStream();
-				wpm.setStream(ips);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		protected void onPostExecute(String feed) {
-
-		}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 	}
 
-	class ScheduleReciver extends BroadcastReceiver {
-		// SettingActivity mainActivity;
-		@Override
-		public void onReceive(Context arg0, Intent arg1) {
-			// TODO Auto-generated method stub
-			new setWallpaperTime().execute();
-		}
-	}
+//	class ScheduleReciver extends BroadcastReceiver {
+//		// SettingActivity mainActivity;
+//		@Override
+//		public void onReceive(Context arg0, Intent arg1) {
+//			// TODO Auto-generated method stub
+//			new setWallpaperTime().execute();
+//		}
+//	}
+
 }

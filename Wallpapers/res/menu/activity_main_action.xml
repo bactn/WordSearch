@@ -6,10 +6,10 @@
         android:showAsAction="ifRoom|withText"
         android:title="@string/action_highlight"/>
     <item
-        android:id="@+id/action_subject"
+        android:id="@+id/action_category"
         android:icon="@drawable/ic_action_video"
         android:showAsAction="ifRoom"
-        android:title="@string/action_subject"/>
+        android:title="@string/action_category"/>
     <item
         android:id="@+id/action_sdcard"
         android:icon="@drawable/ic_action_save"

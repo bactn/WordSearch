@@ -7,7 +7,7 @@
     <string name="action_record">Record Video</string>
     <string name="action_save">Save</string>
     <string name="action_highlight">HighLight</string>
-    <string name="action_subject">Subject</string>
+    <string name="action_category">Category</string>
     <string name="action_sdcard">sdcard</string>
     <string name="item_list_url_detail">Location: </string>
     <string name="action_play">Play Video</string>

@@ -32,7 +32,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class SdCardFragment extends Fragment implements Setting {
+public class SdCardFragment extends Fragment {
 	private Util utils;
 	private ArrayList<String> imageUrls;
 	private DisplayImageOptions options;
@@ -42,6 +42,7 @@ public class SdCardFragment extends Fragment implements Setting {
 	private Cursor cursor;
 	Menu menu;
 	private boolean thumbnailSelection[];
+	ArrayList<String> image_url;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -52,7 +53,6 @@ public class SdCardFragment extends Fragment implements Setting {
 		} catch (Exception e) {
 			throw new RuntimeException(activity.getClass().getName()
 					+ " must implement " + Util.class.getName());
-
 		}
 
 	}
@@ -69,15 +69,16 @@ public class SdCardFragment extends Fragment implements Setting {
 		imageUrls = new ArrayList<String>();
 		cursor = utils.getCursor();
 		menu = utils.getMenu();
-
-		for (int i = 0; i < cursor.getCount(); i++) {
-			cursor.moveToPosition(i);
-			int columIndex = cursor
-					.getColumnIndex(MediaStore.Images.Media.DATA);
-			imageUrls.add(cursor.getString(columIndex));
-			Log.i("imageURL", "ImageURL" + cursor.getString(columIndex));
+		image_url = new ArrayList<String>();
+		if (cursor != null) {
+			for (int i = 0; i < cursor.getCount(); i++) {
+				cursor.moveToPosition(i);
+				int columIndex = cursor
+						.getColumnIndex(MediaStore.Images.Media.DATA);
+				imageUrls.add(cursor.getString(columIndex));
+				Log.i("imageURL", "ImageURL" + cursor.getString(columIndex));
+			}
 		}
-
 		options = new DisplayImageOptions.Builder()
 				.showImageOnLoading(R.drawable.ic_launcher)
 				.showImageForEmptyUri(R.drawable.ic_launcher)
@@ -98,6 +99,7 @@ public class SdCardFragment extends Fragment implements Setting {
 				// TODO Auto-generated method stub
 
 			}
+
 		});
 
 		grid.setNumColumns(utils.getNumberOfColumns());
@@ -107,10 +109,22 @@ public class SdCardFragment extends Fragment implements Setting {
 		return view;
 	}
 
+	public void startSettings() {
+
+		Toast.makeText(getActivity().getApplicationContext(),
+				"Item Clicked: " + image_url.get(0), Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(getActivity().getApplicationContext(),
+				SettingActivity.class);
+		intent.putExtra("ARRAY_IMAGE_URL", image_url);
+		startActivity(intent);
+
+	}
+
 	public void btnChoosePhotosClick(View v) {
 
 		ArrayList<String> selectedItems = imageAdapter.getCheckedItems();
 	}
+
 	public class ImageAdapter extends BaseAdapter {
 
 		ArrayList<String> mList;
@@ -179,11 +193,12 @@ public class SdCardFragment extends Fragment implements Setting {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					Intent intent = new Intent(getActivity()
-							.getApplicationContext(), SettingActivity.class);
-					intent.putExtra("POSITION", position);
-					intent.putExtra("ARRAY_IMAGE_URL", imageUrls.get(position));
-					startActivity(intent);
+					// Intent intent = new Intent(getActivity()
+					// .getApplicationContext(), SettingActivity.class);
+					// intent.putExtra("POSITION", position);
+					// intent.putExtra("ARRAY_IMAGE_URL",
+					// imageUrls.get(position));
+					// startActivity(intent);
 				}
 			});
 			// holder.mCheckBox.setId(position);
@@ -202,6 +217,15 @@ public class SdCardFragment extends Fragment implements Setting {
 					// cb.setChecked(true);
 					menu.getItem(4).setEnabled(true);
 					menu.getItem(4).setIcon(R.drawable.ic_action_play);
+
+					String url;
+					url = "file://" + imageUrls.get(position);
+					Log.i("url", "" + url);
+					image_url.add(url);
+					Toast.makeText(getActivity().getApplicationContext(),
+							"Item Clicked: " + position, Toast.LENGTH_SHORT)
+							.show();
+
 					// thumbnailSelection[id] = true;
 					// }
 				}
@@ -215,30 +239,6 @@ public class SdCardFragment extends Fragment implements Setting {
 		// imageView;
 		CheckBox mCheckBox;
 		int id;
-	}
-
-	@Override
-	public void startSettings() {
-		ArrayList<String> image_url = new ArrayList<String>();
-		String url;
-		int len = thumbnailSelection.length;
-		Log.e("count", "count" + len);
-		for (int i = 0; i < len; i++) {
-			if (thumbnailSelection[i]) {
-				url = "file://" + imageUrls.get(i);
-				Log.i("url", "" + url);
-				image_url.add(url);
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Item Clicked: " + i, Toast.LENGTH_SHORT).show();
-			}
-		}
-		Toast.makeText(getActivity().getApplicationContext(),
-				"Item Clicked: " + image_url.get(0), Toast.LENGTH_SHORT).show();
-		Intent intent = new Intent(getActivity().getApplicationContext(),
-				SettingActivity.class);
-		intent.putExtra("ARRAY_IMAGE_URL", image_url);
-		startActivity(intent);
-
 	}
 
 }
