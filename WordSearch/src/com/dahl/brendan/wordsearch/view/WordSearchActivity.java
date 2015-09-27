@@ -71,12 +71,14 @@ import com.dahl.brendan.wordsearch.view.controller.WordSearchActivityController;
 /**
  * 
  * @author Brendan Dahl
- *
- * Activity for the word search game itself
+ * 
+ *         Activity for the word search game itself
  */
 public class WordSearchActivity extends Activity {
-	class StartHighScoreGlobalTask extends AsyncTask<Integer, Integer, List<HighScore>> {
-		final private ProgressDialog pd = new ProgressDialog(WordSearchActivity.this);
+	class StartHighScoreGlobalTask extends
+			AsyncTask<Integer, Integer, List<HighScore>> {
+		final private ProgressDialog pd = new ProgressDialog(
+				WordSearchActivity.this);
 
 		@Override
 		protected void onPostExecute(List<HighScore> highScores) {
@@ -93,22 +95,35 @@ public class WordSearchActivity extends Activity {
 					} else {
 						Collections.sort(highScores);
 						for (int index = 0; index < highScores.size(); index++) {
-							str.append(Integer.toString(index+1)+": "+highScores.get(index).getName()+" " + highScores.get(index).getScore() + " ( " + ConversionUtil.formatTime.format(new Date(highScores.get(index).getTime())) + " )\n");
+							str.append(Integer.toString(index + 1)
+									+ ": "
+									+ highScores.get(index).getName()
+									+ " "
+									+ highScores.get(index).getScore()
+									+ " ( "
+									+ ConversionUtil.formatTime
+											.format(new Date(highScores.get(
+													index).getTime())) + " )\n");
 						}
 					}
 					final DialogHighScoresGlobalShowListener DIALOG_LISTENER_HIGH_SCORES_SHOW = new DialogHighScoresGlobalShowListener();
-					AlertDialog.Builder builder = new AlertDialog.Builder(WordSearchActivity.this);
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							WordSearchActivity.this);
 					builder.setMessage(str);
 					builder.setTitle(R.string.GLOBAL_HIGH_SCORES);
-					builder.setNeutralButton(android.R.string.ok, DIALOG_LISTENER_HIGH_SCORES_SHOW);
-					builder.setPositiveButton(R.string.LOCAL, DIALOG_LISTENER_HIGH_SCORES_SHOW);
+					builder.setNeutralButton(android.R.string.ok,
+							DIALOG_LISTENER_HIGH_SCORES_SHOW);
+					builder.setPositiveButton(R.string.LOCAL,
+							DIALOG_LISTENER_HIGH_SCORES_SHOW);
 					builder.show();
 				} else {
 					final DialogHighScoresGlobalShowListener DIALOG_LISTENER_HIGH_SCORES_SHOW = new DialogHighScoresGlobalShowListener();
-					AlertDialog.Builder builder = new AlertDialog.Builder(WordSearchActivity.this);
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							WordSearchActivity.this);
 					builder.setMessage(getString(R.string.SCORE_GLOBAL_ERROR));
 					builder.setTitle(R.string.GLOBAL_HIGH_SCORES);
-					builder.setNeutralButton(android.R.string.ok, DIALOG_LISTENER_HIGH_SCORES_SHOW);
+					builder.setNeutralButton(android.R.string.ok,
+							DIALOG_LISTENER_HIGH_SCORES_SHOW);
 					builder.show();
 				}
 			}
@@ -124,12 +139,14 @@ public class WordSearchActivity extends Activity {
 		@Override
 		protected List<HighScore> doInBackground(Integer... res) {
 			List<HighScore> results = new LinkedList<HighScore>();
-//			Debug.startMethodTracing("globalHS");
+			// Debug.startMethodTracing("globalHS");
 			try {
 				HttpPost httpPost = new HttpPost(Constants.API_URL_SCORE_TOP10);
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair(Constants.SECURITY_TOKEN, Constants.VALUE_SECRET));
-				nvps.add(new BasicNameValuePair(Constants.KEY_HIGH_SCORE_THEME, getControl().getCurrentTheme()));
+				nvps.add(new BasicNameValuePair(Constants.SECURITY_TOKEN,
+						Constants.VALUE_SECRET));
+				nvps.add(new BasicNameValuePair(Constants.KEY_HIGH_SCORE_THEME,
+						getControl().getCurrentTheme()));
 				httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 				HttpResponse response = null;
 				try {
@@ -157,23 +174,28 @@ public class WordSearchActivity extends Activity {
 				results = null;
 				e.printStackTrace();
 			}
-//			Debug.stopMethodTracing();
+			// Debug.stopMethodTracing();
 			return results;
 		}
 	}
+
 	class HighScoreSubmitTask extends AsyncTask<Integer, Integer, Boolean> {
 		final private HighScore hs;
+
 		public HighScoreSubmitTask(HighScore hs) {
 			this.hs = hs;
 		}
+
 		@Override
 		protected Boolean doInBackground(Integer... params) {
-//			Debug.startMethodTracing("submit");
+			// Debug.startMethodTracing("submit");
 			try {
 				HttpPost httpPost = new HttpPost(Constants.API_URL_SCORE_SUBMIT);
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair(Constants.SECURITY_TOKEN, Constants.VALUE_SECRET));
-				nvps.add(new BasicNameValuePair(Constants.KEY_PAYLOAD, hs.toJSON().toString()));
+				nvps.add(new BasicNameValuePair(Constants.SECURITY_TOKEN,
+						Constants.VALUE_SECRET));
+				nvps.add(new BasicNameValuePair(Constants.KEY_PAYLOAD, hs
+						.toJSON().toString()));
 				httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 				try {
 					httpClient.execute(httpPost);
@@ -190,15 +212,17 @@ public class WordSearchActivity extends Activity {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-//			Debug.stopMethodTracing();
+			// Debug.stopMethodTracing();
 			return true;
 		}
+
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			getControl().clearCurrentHighScore();
 		}
 	}
+
 	class DialogGameNewListener implements DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
@@ -211,9 +235,12 @@ public class WordSearchActivity extends Activity {
 			}
 		}
 	}
-	class DialogGameOverListener implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+
+	class DialogGameOverListener implements DialogInterface.OnClickListener,
+			DialogInterface.OnCancelListener {
 		public void onClick(DialogInterface dialog, int which) {
-			String name = ((EditText)((AlertDialog)dialog).findViewById(android.R.id.input)).getText().toString();
+			String name = ((EditText) ((AlertDialog) dialog)
+					.findViewById(android.R.id.input)).getText().toString();
 			HighScore hs = getControl().getCurrentHighScore();
 			if (!TextUtils.isEmpty(name)) {
 				hs.setName(name);
@@ -221,14 +248,15 @@ public class WordSearchActivity extends Activity {
 			} else {
 				hs.setName("?");
 			}
-			switch(which) {
+			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE: {
 				if (!getControl().isReplaying()) {
 					new HighScoreSubmitTask(hs).execute(new Integer[0]);
 				}
 			}
 			case DialogInterface.BUTTON_NEUTRAL: {
-				LinkedList<HighScore> scores = getControl().getPrefs().getTopScores();
+				LinkedList<HighScore> scores = getControl().getPrefs()
+						.getTopScores();
 				scores.add(hs);
 				getControl().getPrefs().setTopScores(scores);
 				showDialog(WordSearchActivity.DIALOG_ID_GAME_NEW);
@@ -242,7 +270,9 @@ public class WordSearchActivity extends Activity {
 			removeDialog(DIALOG_ID_GAME_OVER);
 		}
 	}
-	class DialogHighScoresGlobalShowListener implements DialogInterface.OnClickListener {
+
+	class DialogHighScoresGlobalShowListener implements
+			DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			if (which == DialogInterface.BUTTON_NEGATIVE) {
 				control.getPrefs().resetTopScores();
@@ -254,7 +284,9 @@ public class WordSearchActivity extends Activity {
 			}
 		}
 	}
-	class DialogHighScoresLocalShowListener implements DialogInterface.OnClickListener {
+
+	class DialogHighScoresLocalShowListener implements
+			DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			if (which == DialogInterface.BUTTON_NEGATIVE) {
 				control.getPrefs().resetTopScores();
@@ -266,22 +298,28 @@ public class WordSearchActivity extends Activity {
 			}
 		}
 	}
-	class DialogNoWordsCustomListener implements DialogInterface.OnClickListener {
+
+	class DialogNoWordsCustomListener implements
+			DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
-				Intent intent = new Intent(Intent.ACTION_EDIT, com.dahl.brendan.wordsearch.view.WordDictionaryProvider.Word.CONTENT_URI);
+				Intent intent = new Intent(
+						Intent.ACTION_EDIT,
+						com.dahl.brendan.wordsearch.view.WordDictionaryProvider.Word.CONTENT_URI);
 				intent.setType(com.dahl.brendan.wordsearch.view.WordDictionaryProvider.Word.CONTENT_TYPE);
 				startActivity(intent);
 				break;
 			case DialogInterface.BUTTON_NEGATIVE:
-				startActivity(new Intent(WordSearchActivity.this, WordSearchPreferences.class));
+				startActivity(new Intent(WordSearchActivity.this,
+						WordSearchPreferences.class));
 				break;
 			default:
 				break;
 			}
 		}
 	}
+
 	class DialogNoWordsListener implements DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
@@ -289,29 +327,38 @@ public class WordSearchActivity extends Activity {
 				getControl().newWordSearch();
 				break;
 			case DialogInterface.BUTTON_NEUTRAL:
-				startActivity(new Intent(WordSearchActivity.this, WordSearchPreferences.class));
+				startActivity(new Intent(WordSearchActivity.this,
+						WordSearchPreferences.class));
 				break;
 			case DialogInterface.BUTTON_NEGATIVE:
-				startActivity(new Intent(WordSearchActivity.this, WordSearchPreferences.class));
+				startActivity(new Intent(WordSearchActivity.this,
+						WordSearchPreferences.class));
 				break;
 			default:
 				break;
 			}
 		}
 	}
+
 	class DialogIntroListener implements DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE: {
-				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(WordSearchActivity.this);
-				sp.edit().putString(getString(R.string.prefs_touch_mode), getString(R.string.TAP)).commit();
+				SharedPreferences sp = PreferenceManager
+						.getDefaultSharedPreferences(WordSearchActivity.this);
+				sp.edit()
+						.putString(getString(R.string.prefs_touch_mode),
+								getString(R.string.TAP)).commit();
 				break;
 			}
 			case DialogInterface.BUTTON_NEUTRAL:
 				break;
 			case DialogInterface.BUTTON_NEGATIVE: {
-				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(WordSearchActivity.this);
-				sp.edit().putString(getString(R.string.prefs_touch_mode), getString(R.string.DRAG)).commit();
+				SharedPreferences sp = PreferenceManager
+						.getDefaultSharedPreferences(WordSearchActivity.this);
+				sp.edit()
+						.putString(getString(R.string.prefs_touch_mode),
+								getString(R.string.DRAG)).commit();
 				break;
 			}
 			default:
@@ -319,6 +366,7 @@ public class WordSearchActivity extends Activity {
 			}
 		}
 	}
+
 	class DialogDonateListener implements DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
@@ -345,6 +393,7 @@ public class WordSearchActivity extends Activity {
 			control.getPrefs().setDonateIgnore();
 		}
 	}
+
 	class DialogIntroDonateListener implements DialogInterface.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
@@ -361,6 +410,7 @@ public class WordSearchActivity extends Activity {
 			}
 		}
 	}
+
 	final public static int DIALOG_ID_NO_WORDS = 0;
 	final public static int DIALOG_ID_NO_WORDS_CUSTOM = 1;
 	final public static int DIALOG_ID_GAME_OVER = 2;
@@ -372,7 +422,8 @@ public class WordSearchActivity extends Activity {
 
 	final private static String LOG_TAG = "WordSearchActivity";
 	/**
-	 * control classes were made to segment the complex game logic away from the display logic
+	 * control classes were made to segment the complex game logic away from the
+	 * display logic
 	 */
 	private WordSearchActivityController control;
 	private String appVer;
@@ -382,19 +433,20 @@ public class WordSearchActivity extends Activity {
 	}
 
 	public static AndroidHttpClient httpClient = null;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
-			appVer = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+			appVer = this.getPackageManager().getPackageInfo(
+					this.getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e) {
 			appVer = "unknown";
 		}
 		try {
 			AnalyticsTask analytics = new AnalyticsTask(this, true);
-			analytics.execute(new String[] {"/WordSearchActivity"});
+			analytics.execute(new String[] { "/WordSearchActivity" });
 		} catch (RuntimeException re) {
 			Log.e(LOG_TAG, "tracker failed!");
 		} catch (Exception e) {
@@ -404,11 +456,14 @@ public class WordSearchActivity extends Activity {
 		control = new WordSearchActivityController(this);
 		control.restoreState(savedInstanceState);
 		{
-			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-			if (!appVer.equals(sp.getString(Constants.KEY_INTRO_VER, null)) && sp.getString(getString(R.string.prefs_touch_mode), null) == null) {
+			SharedPreferences sp = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			if (!appVer.equals(sp.getString(Constants.KEY_INTRO_VER, null))
+					&& sp.getString(getString(R.string.prefs_touch_mode), null) == null) {
 				this.showDialog(DIALOG_ID_INTRO_INPUT_TYPE);
 				sp.edit().putString(Constants.KEY_INTRO_VER, appVer).commit();
-			} else if (control.getPrefs().getGamePlayCount() >= Constants.DONATE_GAME_PLAY_COUNT && !control.getPrefs().isDonateIngored()) {
+			} else if (control.getPrefs().getGamePlayCount() >= Constants.DONATE_GAME_PLAY_COUNT
+					&& !control.getPrefs().isDonateIngored()) {
 				this.showDialog(DIALOG_ID_INTRO_DONATE);
 			}
 		}
@@ -426,13 +481,15 @@ public class WordSearchActivity extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		Dialog dialog;
-		switch(id) {
+		switch (id) {
 		case DIALOG_ID_NO_WORDS: {
 			final DialogNoWordsListener DIALOG_LISTENER_NO_WORDS = new DialogNoWordsListener();
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.no_words);
-			builder.setNegativeButton(R.string.category, DIALOG_LISTENER_NO_WORDS);
-			builder.setPositiveButton(R.string.new_game, DIALOG_LISTENER_NO_WORDS);
+			builder.setNegativeButton(R.string.category,
+					DIALOG_LISTENER_NO_WORDS);
+			builder.setPositiveButton(R.string.new_game,
+					DIALOG_LISTENER_NO_WORDS);
 			builder.setNeutralButton(R.string.size, DIALOG_LISTENER_NO_WORDS);
 			dialog = builder.create();
 			break;
@@ -441,8 +498,10 @@ public class WordSearchActivity extends Activity {
 			final DialogNoWordsCustomListener DIALOG_LISTENER_NO_WORDS_CUSTOM = new DialogNoWordsCustomListener();
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.no_words_custom);
-			builder.setNegativeButton(R.string.category, DIALOG_LISTENER_NO_WORDS_CUSTOM);
-			builder.setPositiveButton(R.string.custom_editor, DIALOG_LISTENER_NO_WORDS_CUSTOM);
+			builder.setNegativeButton(R.string.category,
+					DIALOG_LISTENER_NO_WORDS_CUSTOM);
+			builder.setPositiveButton(R.string.custom_editor,
+					DIALOG_LISTENER_NO_WORDS_CUSTOM);
 			dialog = builder.create();
 			break;
 		}
@@ -454,7 +513,8 @@ public class WordSearchActivity extends Activity {
 			text.setSingleLine();
 			text.setId(android.R.id.input);
 			builder.setView(text);
-			builder.setPositiveButton(R.string.SAVE_SUBMIT, DIALOG_LISTENER_GAME_OVER);
+			builder.setPositiveButton(R.string.SAVE_SUBMIT,
+					DIALOG_LISTENER_GAME_OVER);
 			builder.setNeutralButton(R.string.SAVE, DIALOG_LISTENER_GAME_OVER);
 			builder.setOnCancelListener(DIALOG_LISTENER_GAME_OVER);
 			dialog = builder.create();
@@ -465,9 +525,12 @@ public class WordSearchActivity extends Activity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("blank");
 			builder.setTitle(R.string.LOCAL_HIGH_SCORES);
-			builder.setNegativeButton(R.string.reset, DIALOG_LISTENER_HIGH_SCORES_SHOW);
-			builder.setNeutralButton(android.R.string.ok, DIALOG_LISTENER_HIGH_SCORES_SHOW);
-			builder.setPositiveButton(R.string.GLOBAL, DIALOG_LISTENER_HIGH_SCORES_SHOW);
+			builder.setNegativeButton(R.string.reset,
+					DIALOG_LISTENER_HIGH_SCORES_SHOW);
+			builder.setNeutralButton(android.R.string.ok,
+					DIALOG_LISTENER_HIGH_SCORES_SHOW);
+			builder.setPositiveButton(R.string.GLOBAL,
+					DIALOG_LISTENER_HIGH_SCORES_SHOW);
 			dialog = builder.create();
 			break;
 		}
@@ -475,9 +538,11 @@ public class WordSearchActivity extends Activity {
 			final DialogGameNewListener DIALOG_LISTENER_GAME_NEW = new DialogGameNewListener();
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(this.getString(R.string.game_over));
-			builder.setPositiveButton(R.string.new_game, DIALOG_LISTENER_GAME_NEW);
+			builder.setPositiveButton(R.string.new_game,
+					DIALOG_LISTENER_GAME_NEW);
 			builder.setNeutralButton(R.string.REPLAY, DIALOG_LISTENER_GAME_NEW);
-			builder.setNegativeButton(android.R.string.cancel, DIALOG_LISTENER_GAME_NEW);
+			builder.setNegativeButton(android.R.string.cancel,
+					DIALOG_LISTENER_GAME_NEW);
 			dialog = builder.create();
 			break;
 		}
@@ -486,7 +551,8 @@ public class WordSearchActivity extends Activity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.INTRO);
 			builder.setPositiveButton(R.string.tap, DIALOG_LISTENER_INTRO);
-			builder.setNeutralButton(android.R.string.cancel, DIALOG_LISTENER_INTRO);
+			builder.setNeutralButton(android.R.string.cancel,
+					DIALOG_LISTENER_INTRO);
 			builder.setNegativeButton(R.string.drag, DIALOG_LISTENER_INTRO);
 			dialog = builder.create();
 			break;
@@ -522,10 +588,14 @@ public class WordSearchActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		this.getMenuInflater().inflate(R.menu.wordsearch_options, menu);
 		menu.findItem(R.id.menu_new).setIcon(android.R.drawable.ic_menu_add);
-		menu.findItem(R.id.menu_options).setIcon(android.R.drawable.ic_menu_preferences);
-		menu.findItem(R.id.menu_custom).setIcon(android.R.drawable.ic_menu_edit);
-		menu.findItem(R.id.menu_tutorial).setIcon(android.R.drawable.ic_menu_help);
-		menu.findItem(R.id.menu_scores).setIcon(android.R.drawable.ic_menu_gallery);
+		menu.findItem(R.id.menu_options).setIcon(
+				android.R.drawable.ic_menu_preferences);
+		menu.findItem(R.id.menu_custom)
+				.setIcon(android.R.drawable.ic_menu_edit);
+		menu.findItem(R.id.menu_tutorial).setIcon(
+				android.R.drawable.ic_menu_help);
+		menu.findItem(R.id.menu_scores).setIcon(
+				android.R.drawable.ic_menu_gallery);
 		menu.findItem(R.id.menu_donate).setIcon(R.drawable.love);
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -533,13 +603,22 @@ public class WordSearchActivity extends Activity {
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		super.onPrepareDialog(id, dialog);
-		switch(id) {
+		switch (id) {
 		case DIALOG_ID_GAME_OVER: {
 			HighScore hs = control.getCurrentHighScore();
-			TextView label = (TextView)((AlertDialog)dialog).findViewById(android.R.id.message);
-			String msg = this.getString(R.string.SCORE_CONGRATULATIONS).replace("%replaceme", hs.getScore().toString()+" ("+ConversionUtil.formatTime.format(new Date(hs.getTime()))+")");
+			TextView label = (TextView) ((AlertDialog) dialog)
+					.findViewById(android.R.id.message);
+			String msg = this.getString(R.string.SCORE_CONGRATULATIONS)
+					.replace(
+							"%replaceme",
+							hs.getScore().toString()
+									+ " ("
+									+ ConversionUtil.formatTime
+											.format(new Date(hs.getTime()))
+									+ ")");
 			if (hs.isHighScore()) {
-				msg += this.getString(R.string.SCORE_LOCAL_HIGH).replace("%replaceme", Integer.toString(hs.getRank()+1));
+				msg += this.getString(R.string.SCORE_LOCAL_HIGH).replace(
+						"%replaceme", Integer.toString(hs.getRank() + 1));
 			}
 			if (hs.isGlobalError()) {
 				msg += this.getString(R.string.SCORE_GLOBAL_ERROR);
@@ -550,10 +629,13 @@ public class WordSearchActivity extends Activity {
 				} else {
 					global = this.getString(R.string.SCORE_GLOBAL_PERCENT);
 				}
-				msg += global.replace("%replaceme", Integer.toString(hs.getGlobalRank()));
+				msg += global.replace("%replaceme",
+						Integer.toString(hs.getGlobalRank()));
 			}
-			EditText edit = (EditText)((AlertDialog)dialog).findViewById(android.R.id.input);
-			Button save = (Button)((AlertDialog)dialog).findViewById(android.R.id.button3);
+			EditText edit = (EditText) ((AlertDialog) dialog)
+					.findViewById(android.R.id.input);
+			Button save = (Button) ((AlertDialog) dialog)
+					.findViewById(android.R.id.button3);
 			edit.setText(getControl().getPrefs().getDefaultName());
 			if (hs.isHighScore()) {
 				save.setVisibility(EditText.VISIBLE);
@@ -570,7 +652,7 @@ public class WordSearchActivity extends Activity {
 			break;
 		}
 		case DIALOG_ID_HIGH_SCORES_LOCAL_SHOW: {
-//			Debug.startMethodTracing("localHS");
+			// Debug.startMethodTracing("localHS");
 			List<HighScore> highScores = this.getControl().getHighScores();
 			StringBuilder str = new StringBuilder();
 			if (highScores.size() == 0) {
@@ -578,12 +660,20 @@ public class WordSearchActivity extends Activity {
 			} else {
 				Collections.sort(highScores);
 				for (int index = 0; index < highScores.size(); index++) {
-					str.append(Integer.toString(index+1)+": "+highScores.get(index).getName()+" " + highScores.get(index).getScore() + " ( " + ConversionUtil.formatTime.format(new Date(highScores.get(index).getTime())) + " )\n");
+					str.append(Integer.toString(index + 1)
+							+ ": "
+							+ highScores.get(index).getName()
+							+ " "
+							+ highScores.get(index).getScore()
+							+ " ( "
+							+ ConversionUtil.formatTime.format(new Date(
+									highScores.get(index).getTime())) + " )\n");
 				}
 			}
-			TextView label = (TextView)((AlertDialog)dialog).findViewById(android.R.id.message);
+			TextView label = (TextView) ((AlertDialog) dialog)
+					.findViewById(android.R.id.message);
 			label.setText(str);
-//			Debug.stopMethodTracing();
+			// Debug.stopMethodTracing();
 			break;
 		}
 		default:
@@ -604,22 +694,19 @@ public class WordSearchActivity extends Activity {
 		case R.id.menu_new:
 			control.newWordSearch();
 			return true;
-		case R.id.menu_custom:
-		{
+		case R.id.menu_custom: {
 			Intent intent = new Intent(Intent.ACTION_EDIT, Word.CONTENT_URI);
 			intent.setType(Word.CONTENT_TYPE);
 			this.startActivity(intent);
 			return true;
 		}
-		case R.id.menu_tutorial:
-		{
+		case R.id.menu_tutorial: {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setClass(this, TutorialActivity.class);
 			startActivity(intent);
 			return true;
 		}
-		case R.id.menu_donate:
-		{
+		case R.id.menu_donate: {
 			this.showDialog(DIALOG_ID_DONATE);
 			return true;
 		}
@@ -631,14 +718,14 @@ public class WordSearchActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-//		Log.v(LOG_TAG, "onPause");
+		// Log.v(LOG_TAG, "onPause");
 		control.timePause();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-//		Log.v(LOG_TAG, "onResume");
+		// Log.v(LOG_TAG, "onResume");
 		if (control.isGameRunning()) {
 			control.timeResume();
 		} else if (control.getCurrentHighScore() != null) {
@@ -649,17 +736,20 @@ public class WordSearchActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-//		Log.v(LOG_TAG, "onSaveInstanceState");
+		// Log.v(LOG_TAG, "onSaveInstanceState");
 		control.saveState(outState);
 		this.removeDialog(DIALOG_ID_GAME_OVER);
 	}
 
 	/**
-	 * creates a grid of textViews from layout files based on the gridSize
-	 *  and sets the new textViews to use the controller as their listener
+	 * creates a grid of textViews from layout files based on the gridSize and
+	 * sets the new textViews to use the controller as their listener
 	 * 
-	 * @param gridSize square size of the new grid to make
-	 * @param controller the onkeyListener used for the grid's textViews, also holds the gridView an array of the new textView's in the grid
+	 * @param gridSize
+	 *            square size of the new grid to make
+	 * @param controller
+	 *            the onkeyListener used for the grid's textViews, also holds
+	 *            the gridView an array of the new textView's in the grid
 	 */
 	public void setupViewGrid() {
 		control.setLetter(null);
@@ -677,13 +767,16 @@ public class WordSearchActivity extends Activity {
 			controller.setGridView(new TextView[gridSize][]);
 			TextView[][] gridView = controller.getGridView();
 			for (point.y = 0; point.y < gridSize; point.y++) {
-				this.getLayoutInflater().inflate(R.layout.grid_row, gridTable, true);
-				ViewGroup row = (ViewGroup)gridTable.getChildAt(point.y);
+				this.getLayoutInflater().inflate(R.layout.grid_row, gridTable,
+						true);
+				ViewGroup row = (ViewGroup) gridTable.getChildAt(point.y);
 				TextView[] rowText = new TextView[gridSize];
 				for (point.x = 0; point.x < gridSize; point.x++) {
-					this.getLayoutInflater().inflate(R.layout.grid_text_view, row, true);
-					TextView view = (TextView)row.getChildAt(point.x);
-					view.setId(ConversionUtil.convertPointToID(point, control.getGridSize()));
+					this.getLayoutInflater().inflate(R.layout.grid_text_view,
+							row, true);
+					TextView view = (TextView) row.getChildAt(point.x);
+					view.setId(ConversionUtil.convertPointToID(point,
+							control.getGridSize()));
 					view.setOnKeyListener(controller);
 
 					rowText[point.x] = view;
@@ -702,7 +795,8 @@ public class WordSearchActivity extends Activity {
 				input = "Drag";
 			}
 			AnalyticsTask analytics = new AnalyticsTask(this, false);
-			analytics.execute(new String[] {category, input, Integer.toString(control.getGridSize())});
+			analytics.execute(new String[] { category, input,
+					Integer.toString(control.getGridSize()) });
 		} catch (RuntimeException re) {
 			Log.e(LOG_TAG, "tracker failed!");
 		} catch (Exception e) {
@@ -714,7 +808,8 @@ public class WordSearchActivity extends Activity {
 		try {
 			String category = control.getPrefs().getCategory();
 			AnalyticsTask analytics = new AnalyticsTask(this, false);
-			analytics.execute(new String[] {category, "replay", Integer.toString(control.getGridSize())});
+			analytics.execute(new String[] { category, "replay",
+					Integer.toString(control.getGridSize()) });
 		} catch (RuntimeException re) {
 			Log.e(LOG_TAG, "tracker failed!");
 		} catch (Exception e) {

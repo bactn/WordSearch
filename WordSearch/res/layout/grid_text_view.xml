@@ -8,6 +8,7 @@
   android:focusable="true"
   android:saveEnabled="true"
   android:inputType="none"
+  android:textColor="#fff"
   android:includeFontPadding="false"
   android:typeface="monospace"
   android:textSize="@dimen/grid_view"/>

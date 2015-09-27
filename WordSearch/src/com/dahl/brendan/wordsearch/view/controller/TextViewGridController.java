@@ -52,11 +52,12 @@ import com.dahl.brendan.wordsearch.view.WordSearchActivity;
  * 
  * @author Brendan Dahl
  * 
- * contains the game logic of the text view grid and interactions
- * most complex stuff happens here
- *
+ *         contains the game logic of the text view grid and interactions most
+ *         complex stuff happens here
+ * 
  */
-public class TextViewGridController implements OnTouchListener, OnKeyListener, Callback {
+public class TextViewGridController implements OnTouchListener, OnKeyListener,
+		Callback {
 	class EventHandlerCallback implements Callback {
 		public boolean handleMessage(Message msg) {
 			if (handlerEvents.hasMessages(MSG_CLEAR)) {
@@ -64,21 +65,25 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 			}
 			switch (msg.what) {
 			case MSG_KEY: {
-				selectionStartEnd((TextView)msg.obj);
+				selectionStartEnd((TextView) msg.obj);
 				break;
 			}
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE: {
-				if (handlerEvents.hasMessages(MotionEvent.ACTION_UP) || handlerEvents.hasMessages(MotionEvent.ACTION_DOWN)) {
+				if (handlerEvents.hasMessages(MotionEvent.ACTION_UP)
+						|| handlerEvents.hasMessages(MotionEvent.ACTION_DOWN)) {
 					return true;
 				}
 			}
 			case MotionEvent.ACTION_UP: {
-				MotionEvent event = (MotionEvent)msg.obj;
+				MotionEvent event = (MotionEvent) msg.obj;
 				setupDemensionPoints();
-				Point point = new Point();// row and column of the grid that was touched
-				Point pointPadding = new Point();// the x and y offset within the
-													// touched grid TextView where the
+				Point point = new Point();// row and column of the grid that was
+											// touched
+				Point pointPadding = new Point();// the x and y offset within
+													// the
+													// touched grid TextView
+													// where the
 													// touch occurred
 				point.y = (int) (Math.round(event.getY()) / pointDemension.y);
 				pointPadding.y = (int) (Math.round(event.getY()) % pointDemension.y);
@@ -91,9 +96,11 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 					point.x--;
 				}
 				if (touchMode) {
-					handleTextViewEventTouch(point, pointPadding, event.getAction());
+					handleTextViewEventTouch(point, pointPadding,
+							event.getAction());
 				} else {
-					handleTextViewEventClick(point, pointPadding, event.getAction());
+					handleTextViewEventClick(point, pointPadding,
+							event.getAction());
 				}
 				break;
 			}
@@ -131,7 +138,7 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	final private Handler handler;
 	final private HandlerThread threadEvents;
 	final private Handler handlerEvents;
-	
+
 	private boolean touchMode = true;
 	final private static int MSG_SET_TEXT_COLOR = 0;
 	final private static int MSG_CLEAR = -1;
@@ -143,37 +150,43 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 		this.control = control;
 		this.threadEvents = new HandlerThread("word-search-events");
 		this.threadEvents.start();
-		this.handlerEvents = new Handler(threadEvents.getLooper(), new EventHandlerCallback());
+		this.handlerEvents = new Handler(threadEvents.getLooper(),
+				new EventHandlerCallback());
 		this.handler = new Handler(this);
 	}
 
 	public void clearPointDemension() {
 		this.pointDemension = null;
 	}
-	
+
 	public TextView[][] getGridView() {
 		return gridView;
 	}
 
-	private String getSelectionWord(Point pointStart, Point pointEnd, Point delta) {
+	private String getSelectionWord(Point pointStart, Point pointEnd,
+			Point delta) {
 		String selectionWord = "";
 		Point point = new Point();
 		point.x = pointStart.x;
 		point.y = pointStart.y;
 		if (!Selection.isValidPoint(point, gridView.length)) {
-			throw new NullPointerException("point: "+point.x+","+point.y+"; delta: "+delta.x+","+delta.y + "; length: "+gridView.length);
+			throw new NullPointerException("point: " + point.x + "," + point.y
+					+ "; delta: " + delta.x + "," + delta.y + "; length: "
+					+ gridView.length);
 		}
 		selectionWord += this.gridView[point.y][point.x].getText();
 		do {
 			point.x += delta.x;
 			point.y += delta.y;
-			if (!point.equals(pointStart) && Selection.isValidPoint(point, gridView.length)) {
+			if (!point.equals(pointStart)
+					&& Selection.isValidPoint(point, gridView.length)) {
 				selectionWord += this.gridView[point.y][point.x].getText();
 			}
-		} while (!point.equals(pointEnd) && Selection.isValidPoint(point, gridView.length));
+		} while (!point.equals(pointEnd)
+				&& Selection.isValidPoint(point, gridView.length));
 		return selectionWord;
 	}
-	
+
 	private Theme getTheme() {
 		return control.getTheme();
 	}
@@ -181,7 +194,7 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 		case MSG_SET_TEXT_COLOR: {
-			TextView view = (TextView)msg.obj;
+			TextView view = (TextView) msg.obj;
 			ColorState color = msg.getData().getParcelable(MSG_DATA_COLOR);
 			ColorStateList found = msg.getData().getParcelable(MSG_DATA_FOUND);
 			if (color == null) {
@@ -221,7 +234,8 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 		return true;
 	}
 
-	private void handleTextViewEventClick(Point point, Point pointPadding, int action) {
+	private void handleTextViewEventClick(Point point, Point pointPadding,
+			int action) {
 		if (Selection.isValidPoint(point, gridView.length)) {
 			TextView views2 = gridView[point.y][point.x];
 			switch (action) {
@@ -243,8 +257,9 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 			control.setLetter(null);
 		}
 	}
-	
-	private void handleTextViewEventTouch(Point point, Point pointPadding, int action) {
+
+	private void handleTextViewEventTouch(Point point, Point pointPadding,
+			int action) {
 		// if touch happened outside the middle 1/2 of the width of the TextView
 		// or outside the middle 3/5 of the height of the TextView
 		// ignore touch unless it is a down or up event in which case force an
@@ -306,7 +321,7 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 		default:
 		}
 	}
-	
+
 	private Paint isValidClick(int x, int y) {
 		setupDemensionPoints();
 		Point point = new Point();// row and column of the grid that was touched
@@ -331,24 +346,25 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 				|| pointPadding.x > pointValidMax.x
 				|| pointPadding.y < pointValidMin.y
 				|| pointPadding.y > pointValidMax.y) {
-			int num = ((point.x+point.y)*15)%255;
+			int num = ((point.x + point.y) * 15) % 255;
 			mPaintMiss.setColor(Color.rgb(num, num, num));
 			return mPaintMiss;
 		}
 
 		// if touch was within the gridView assign gridView else if up or down
 		// event force a selection end
-		if (Selection.isValidPoint(point, gridView.length)){
+		if (Selection.isValidPoint(point, gridView.length)) {
 			return mPaintFound;
 		} else {
 			return null;
 		}
 	}
-	
+
 	public Drawable makeBackground(int height, int width) {
 		mPaintFound.setColor(0xff00ff00);
 		mPaintMiss.setColor(0xffff0000);
-		Bitmap mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		Bitmap mBitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
 		Canvas mCanvas = new Canvas(mBitmap);
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -367,7 +383,8 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	 * enter key and space causes selection
 	 */
 	public boolean onKey(View view, int keyCode, KeyEvent event) {
-//		Log.v(LOG_TAG, "onKey," + view.getId() + ":" + keyCode + ", event:"	+ event.toString());
+		// Log.v(LOG_TAG, "onKey," + view.getId() + ":" + keyCode + ", event:" +
+		// event.toString());
 		switch (keyCode) {
 		case 19:
 		case 20:
@@ -378,7 +395,8 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 		case 23:
 		case 62:
 		case 66:
-			if (event.getAction() == KeyEvent.ACTION_UP && view instanceof TextView) {
+			if (event.getAction() == KeyEvent.ACTION_UP
+					&& view instanceof TextView) {
 				Message.obtain(handlerEvents, MSG_KEY, view).sendToTarget();
 			}
 			return true;
@@ -388,34 +406,40 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	}
 
 	public boolean onTouch(View view, MotionEvent event) {
-		Message.obtain(handlerEvents, event.getAction(), view.getId(), 0, event).sendToTarget();
+		Message.obtain(handlerEvents, event.getAction(), view.getId(), 0, event)
+				.sendToTarget();
 		return true;
 	}
 
 	/**
 	 * 
-	 * @param grid word search model of all the letters in a grid
+	 * @param grid
+	 *            word search model of all the letters in a grid
 	 */
 	public void reset(Grid grid) {
 		handlerEvents.sendEmptyMessage(MSG_CLEAR);
 		Point point = new Point();
 		for (point.y = 0; point.y < gridView.length; point.y++) {
 			for (point.x = 0; point.x < gridView[point.y].length; point.x++) {
-				gridView[point.y][point.x].setText(grid.getLetterAt(point).toString());
+				gridView[point.y][point.x].setText(grid.getLetterAt(point)
+						.toString());
 				gridView[point.y][point.x].setTag(null);
 				gridView[point.y][point.x].setTextColor(getTheme().normal);
 			}
 		}
 		for (Word wordFound : grid.getWordsFound()) {
-			this.selectionPaint(wordFound.getPointStart(), wordFound.getPointEnd(), ColorState.FOUND);
+			this.selectionPaint(wordFound.getPointStart(),
+					wordFound.getPointEnd(), ColorState.FOUND);
 			control.getTheme().updateCurrentFound();
 		}
 	}
 
 	/**
-	 * adds a TextView to the current selection is it fits in the current selection
+	 * adds a TextView to the current selection is it fits in the current
+	 * selection
 	 * 
-	 * @param view TextView from grid to add to the current selection list
+	 * @param view
+	 *            TextView from grid to add to the current selection list
 	 * @return false if selection failed
 	 */
 	private boolean selectionAdd(TextView view) {
@@ -428,9 +452,12 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 			control.setLetter(selection.getEnd().getText());
 		} else if (!view.equals(selection.getStart())
 				&& !view.equals(selection.getEnd())) {
-			Point pointStart = ConversionUtil.convertIDToPoint(selection.getStart().getId(), control.getGridSize());
-			Point pointEnd = ConversionUtil.convertIDToPoint(selection.getEnd().getId(), control.getGridSize());
-			Point pointNew = ConversionUtil.convertIDToPoint(view.getId(), control.getGridSize());
+			Point pointStart = ConversionUtil.convertIDToPoint(selection
+					.getStart().getId(), control.getGridSize());
+			Point pointEnd = ConversionUtil.convertIDToPoint(selection.getEnd()
+					.getId(), control.getGridSize());
+			Point pointNew = ConversionUtil.convertIDToPoint(view.getId(),
+					control.getGridSize());
 			Point delta = Selection.getDeltas(pointStart, pointNew);
 			if (delta == null) {
 				return false;
@@ -455,17 +482,21 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	}
 
 	/**
-	 * takes the current selection and checks to see if it is a real word in the grid
-	 * also resets the selection
+	 * takes the current selection and checks to see if it is a real word in the
+	 * grid also resets the selection
 	 */
 	private void selectionEnd() {
 		if (this.selection.hasBegun()) {// if selection has been started
-			Point pointStart = ConversionUtil.convertIDToPoint(this.selection.getStart().getId(), control.getGridSize());
-			Point pointEnd = ConversionUtil.convertIDToPoint(this.selection.getEnd().getId(), control.getGridSize());
+			Point pointStart = ConversionUtil.convertIDToPoint(this.selection
+					.getStart().getId(), control.getGridSize());
+			Point pointEnd = ConversionUtil.convertIDToPoint(this.selection
+					.getEnd().getId(), control.getGridSize());
 			String word = control.guessWord(pointStart, pointEnd);
-			if (word == null) {// selection was not a word in the grid so revert the colors of all leters in the selection
+			if (word == null) {// selection was not a word in the grid so revert
+								// the colors of all leters in the selection
 				this.selectionPaint(pointStart, pointEnd, ColorState.NORMAL);
-			} else {// highlight found word in grid and pass found back to control main
+			} else {// highlight found word in grid and pass found back to
+					// control main
 				this.selectionPaint(pointStart, pointEnd, ColorState.FOUND);
 				control.getTheme().updateCurrentFound();
 				control.foundWord(word);
@@ -476,15 +507,20 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 	}
 
 	/**
-	 * will iterate from pointStart to pointEnd and change each TextView's color to supplied color
+	 * will iterate from pointStart to pointEnd and change each TextView's color
+	 * to supplied color
 	 * 
-	 * @param pointStart first point in selection
-	 * @param pointEnd last point in selection
-	 * @param color null to revert a previouscolorPicked
-	 * 				colorPicked to set the color to colorPicked
-	 * 				colorFound to set the color to currentColor
+	 * @param pointStart
+	 *            first point in selection
+	 * @param pointEnd
+	 *            last point in selection
+	 * @param color
+	 *            null to revert a previouscolorPicked colorPicked to set the
+	 *            color to colorPicked colorFound to set the color to
+	 *            currentColor
 	 */
-	private void selectionPaint(Point pointStart, Point pointEnd, ColorState color) {
+	private void selectionPaint(Point pointStart, Point pointEnd,
+			ColorState color) {
 		Point delta = Selection.getDeltas(pointStart, pointEnd);
 		if (delta == null) {
 			return;
@@ -493,36 +529,46 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 		point.x = pointStart.x;
 		point.y = pointStart.y;
 		if (!Selection.isValidPoint(point, gridView.length)) {
-			throw new NullPointerException("point: "+point.x+","+point.y+"; delta: "+delta.x+","+delta.y + "; length: "+gridView.length);
+			throw new NullPointerException("point: " + point.x + "," + point.y
+					+ "; delta: " + delta.x + "," + delta.y + "; length: "
+					+ gridView.length);
 		}
 		this.setTextViewColor(this.gridView[point.y][point.x], color);
 		do {
 			point.x += delta.x;
 			point.y += delta.y;
-			if (!point.equals(pointStart) && Selection.isValidPoint(point, gridView.length)) {
+			if (!point.equals(pointStart)
+					&& Selection.isValidPoint(point, gridView.length)) {
 				this.setTextViewColor(this.gridView[point.y][point.x], color);
 			}
-		} while (!point.equals(pointEnd) && Selection.isValidPoint(point, gridView.length));
+		} while (!point.equals(pointEnd)
+				&& Selection.isValidPoint(point, gridView.length));
 	}
 
 	/**
 	 * reset a selection if needed, then start a new one with selectionAdd
 	 * 
-	 * @param view TextView to pass into selectionAdd
+	 * @param view
+	 *            TextView to pass into selectionAdd
 	 */
 	private void selectionStart(TextView view) {
 		if (this.selection.hasBegun()) {
-			Point pointStart = ConversionUtil.convertIDToPoint(this.selection.getStart().getId(), control.getGridSize());
-			Point pointEnd = ConversionUtil.convertIDToPoint(this.selection.getEnd().getId(), control.getGridSize());
+			Point pointStart = ConversionUtil.convertIDToPoint(this.selection
+					.getStart().getId(), control.getGridSize());
+			Point pointEnd = ConversionUtil.convertIDToPoint(this.selection
+					.getEnd().getId(), control.getGridSize());
 			this.selectionPaint(pointStart, pointEnd, null);
 			this.selection.reset();
 		}
 		this.selectionAdd(view);
 	}
+
 	/**
-	 * Will either start or end a selection based on whether the selection has already begun
+	 * Will either start or end a selection based on whether the selection has
+	 * already begun
 	 * 
-	 * @param view TextView to act upon
+	 * @param view
+	 *            TextView to act upon
 	 */
 	private void selectionStartEnd(TextView view) {
 		if (!this.selection.hasBegun()) {// start selection
@@ -532,37 +578,47 @@ public class TextViewGridController implements OnTouchListener, OnKeyListener, C
 			selectionEnd();
 		}
 	}
+
 	public void setGridView(TextView[][] gridViewNew) {
 		this.gridView = gridViewNew;
 	}
+
 	/**
-	 * Changes a single TextView's color; and saves the old color within the TextView for later reverting if passing colorPicked
+	 * Changes a single TextView's color; and saves the old color within the
+	 * TextView for later reverting if passing colorPicked
 	 * 
-	 * @param view TextView in the grid to change the color of
-	 * @param color change the view to this color; or pass in null to revert the color to its old color
+	 * @param view
+	 *            TextView in the grid to change the color of
+	 * @param color
+	 *            change the view to this color; or pass in null to revert the
+	 *            color to its old color
 	 */
 	private void setTextViewColor(TextView view, ColorState color) {
 		Message msg = Message.obtain(handler, MSG_SET_TEXT_COLOR, view);
 		msg.getData().putParcelable(MSG_DATA_COLOR, color);
-		msg.getData().putParcelable(MSG_DATA_FOUND, getTheme().getCurrentFound());
+		msg.getData().putParcelable(MSG_DATA_FOUND,
+				getTheme().getCurrentFound());
 		msg.sendToTarget();
 	}
+
 	protected void setTouchMode(boolean touchMode2) {
 		if (touchMode2 != touchMode) {
 			this.touchMode = touchMode2;
 			this.selectionEnd();
 		}
 	}
-	// defines grid TextView's height and width for later calculations if it isn't already saved
+
+	// defines grid TextView's height and width for later calculations if it
+	// isn't already saved
 	private void setupDemensionPoints() {
 		if (pointDemension == null) {
 			View t = gridView[0][0].getRootView().findViewById(R.id.gridTable);
 			PointF p = new PointF();
-			p.x = t.getWidth()/(float)gridView.length;
-			p.y = t.getHeight()/(float)gridView.length;
+			p.x = t.getWidth() / (float) gridView.length;
+			p.y = t.getHeight() / (float) gridView.length;
 			pointDemension = p;
 			pointValidMin.x = pointDemension.x / 4;
-			pointValidMin.y = (pointDemension.y-gridView[0][0].getTextSize())/2;
+			pointValidMin.y = (pointDemension.y - gridView[0][0].getTextSize()) / 2;
 			pointValidMax.x = pointDemension.x * 3 / 4;
 			pointValidMax.y = gridView[0][0].getTextSize() + pointValidMin.x;
 		}
